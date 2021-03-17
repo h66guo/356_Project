@@ -8,20 +8,23 @@ select '----------------------------------------------------------------' as '';
 select 'Create TrafficSource' as '';
 
 CREATE TABLE TrafficSource(
-    Flow.ID char unique not null, 
-    Source.IP char not null,
-    Source.Port int not null,
+    FlowID char unique not null, 
+    SourceIP char not null,
+    SourcePort int not null,
 
-    primary key(Flow_ID)
+    primary key(FlowID)
 );
 -- need to add check constriants to check for flow id atomlicity
 
-load data infile 'D:\3b\ECE356\Dataset-Unicauca-Version2-87Atts\Dataset-Unicauca-Version2-87Atts.csv' ignore into table TrafficSource
-    fileds terminated by ','
+load data local infile 'D:/3b/ECE356/Dataset-Unicauca-Version2-87Atts/Dataset-Unicauca-Version2-87Atts.csv' ignore into table TrafficSource
+    fields terminated by ','
     enclosed by '"'
     lines terminated by '\n'
-    ingore 1 lines
-    (Flow.ID, Source.IP, Source.Port);
+    ignore 1 lines
+    (@Flow.ID, @Source.IP, @Source.Port)
+    set FlowID=@Flow.ID, 
+    SourceIP=@Source.IP,
+    SourcePort=@Source.Port;
 
 select '----------------------------------------------------------------' as '';
 select 'Create TrafficDestination' as '';
