@@ -8,8 +8,8 @@ select '----------------------------------------------------------------' as '';
 select 'Create TrafficSource' as '';
 
 CREATE TABLE TrafficSource(
-    FlowID char unique not null, 
-    SourceIP char not null,
+    FlowID varchar unique not null, 
+    SourceIP varchar not null,
     SourcePort int not null,
 
     primary key(FlowID)
@@ -30,8 +30,8 @@ select '----------------------------------------------------------------' as '';
 select 'Create TrafficDestination' as '';
 
 CREATE TABLE TrafficDestination(
-    Flow.ID char unique not null, 
-    Destination.IP char not null,
+    Flow.ID varchar unique not null, 
+    Destination.IP varchar not null,
     Destination.Port int not null,
 
     primary key(Flow_ID)
@@ -49,7 +49,7 @@ select '----------------------------------------------------------------' as '';
 select 'Create TrafficFlows' as '';
 
 CREATE TABLE TrafficFlows(
-    Flow.ID char unique not null, 
+    Flow.ID varchar unique not null, 
     Protocol int not null,
     Timestamp datetime not null,
     Flow.Duration int not null,
@@ -72,7 +72,7 @@ select '----------------------------------------------------------------' as '';
 select 'Create Protocol' as '';
 
 CREATE TABLE Protocol(
-    Flow.ID char unique not null, 
+    Flow.ID varchar unique not null, 
     Protocol int not null,
     primary key(Flow_ID)
 );
@@ -89,7 +89,7 @@ select '----------------------------------------------------------------' as '';
 select 'Create Services' as '';
 
 CREATE TABLE Services(
-    Flow.ID char unique not null, 
+    Flow.ID varchar unique not null, 
     Protocol int not null,
     primary key(Flow_ID)
 );
