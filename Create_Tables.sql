@@ -96,7 +96,7 @@ create TEMPORARY TABLE temp(
     L7Protocol int not null, 
     ProtocolName int not null,
 
-    primary key(SourceIP, SourcePort, destinationIP, destinationPort,Protocol, Duration)
+    primary key(SourceIP, SourcePort, DestinationIP, DestinationPort,Protocol, FlowDuration)
 );
 
 load data local infile 'D:/3b/ECE356/Dataset-Unicauca-Version2-87Atts/Dataset-Unicauca-Version2-87Atts.csv' ignore into table temp
@@ -203,7 +203,7 @@ CREATE TABLE Flow(
 
 
 
-    primary key(SourceIP, SourcePort, DestinationIP, DestinationPort,Protocol, Duration)
+    primary key(SourceIP, SourcePort, DestinationIP, DestinationPort,Protocol, FlowDuration)
 );
 -- need to add check constriants to check for flow id atomlicity
 insert into Flow select FlowID, SourceIP, DestinationIP, DestinationPort, Protocol,
