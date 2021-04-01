@@ -193,7 +193,7 @@ IGNORE 1 LINES
 )
 SET timestamp = STR_TO_DATE(@timestamp, '%d/%m/%Y%T');
 
-SELECT COUNT(*) AS 'Row count after loading Dataset-Unicauca-Version2-87Atts.csv' FROM BaseFlow;
+-- SELECT COUNT(*) AS 'Row count after loading Dataset-Unicauca-Version2-87Atts.csv' FROM BaseFlow;
 
 LOAD DATA INFILE '/var/lib/mysql-files/Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv'
 INTO TABLE BaseFlow
@@ -295,4 +295,4 @@ SET
   bytes_per_second = if (@bytes_per_second REGEXP '\\d', @bytes_per_second, NULL),
   packets_per_second = if (@packets_per_second REGEXP '\\d', @packets_per_second, NULL);
 
-SELECT COUNT(*) AS 'Row count after loading Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv' FROM BaseFlow;
+-- SELECT COUNT(*) AS 'Row count after loading Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv' FROM BaseFlow;
