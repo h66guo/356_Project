@@ -7,11 +7,141 @@ import csv
 
 load_dotenv()
 
+#table arrays for finding table to update 
+flowColumns = [
+  "id",
+  "source_ip",
+  "source_port",
+  "destination_ip", 
+  "destination_port", 
+  "protocol_id",
+  "timestamp", 
+  "duration", 
+  "label"
+]
+
+flowbytesColumns = [
+  "flow_id", 
+  "bytes_per_second", 
+  "fwd_bytes_bulk_avg",
+  "bwd_bytes_bulk_avg", 
+  "fwd_subflow_bytes_avg", 
+  "bwd_subflow_bytes_avg", 
+  "fwd_init_win_bytes", 
+  "bwd_init_win_bytes"
+]
+
+flowflagsColumns = [
+  "flow_id",
+  "fwd_psh_flags", 
+  "bwd_psh_flags", 
+  "fwd_urg_flags", 
+  "bwd_urg_flags", 
+  "fin_flag_count", 
+  "syn_flag_count",
+  "rst_flag_count",
+  "psh_flag_count",
+  "ack_flag_count",
+  "urg_flag_count",
+  "cwe_flag_count",
+  "ece_flag_count"
+]
+
+flowiatColumns = [
+  "flow_id",
+  "fwd_header_length",
+  "bwd_header_length",
+  "down_up_ratio",
+  "fwd_segment_size_avg",
+  "bwd_segment_size_avg",
+  "fwd_header_length_1",
+  "fwd_bulk_rate_avg",
+  "bwd_bulk_rate_avg",
+  "fwd_segment_size_min",
+  "active_time_mean",
+  "active_time_std", 
+  "active_time_max",
+  "active_time_min",
+  "idle_time_mean",
+  "idle_time_std",
+  "idle_time_max",
+  "idle_time_min"
+]
+
+flowinfoColumns = [
+  "flow_id",
+  "fwd_header_length",
+  "bwd_header_length",
+  "down_up_ratio", 
+  "fwd_segment_size_avg",
+  "bwd_segment_size_avg",
+  "fwd_header_length_1",
+  "fwd_bulk_rate_avg",
+  "bwd_bulk_rate_avg",
+  "fwd_segment_size_min",
+  "active_time_mean",
+  "active_time_std",
+  "active_time_max",
+  "active_time_min",
+  "idle_time_mean",
+  "idle_time_std", 
+  "idle_time_max",
+  "idle_time_min"
+]
+
+flowpacketsColumns = [
+  "flow_id",
+  "fwd_packets",
+  "bwd_packets",
+  "fwd_packets_bytes",
+  "bwd_packets_bytes",
+  "fwd_packets_bytes_max",
+  "fwd_packets_bytes_min",
+  "fwd_packets_bytes_mean",
+  "fwd_packets_bytes_std",
+  "bwd_packets_bytes_max",
+  "bwd_packets_bytes_min",
+  "bwd_packets_bytes_mean",
+  "bwd_packets_bytes_std",
+  "packets_per_second", 
+  "fwd_packets_per_second",
+  "bwd_packets_per_second",
+  "packet_length_min",
+  "packet_length_max",
+  "packet_length_mean",
+  "packet_length_std",
+  "packet_length_variance", 
+  "packet_size_avg",
+  "fwd_packets_bulk_avg",
+  "bwd_packets_bulk_avg",
+  "fwd_subflow_packets_avg",
+  "bwd_subflow_packets_avg",
+  "fwd_act_data_packets"
+]
+
+def findTable(column): 
+  if column[1:] in flowColumns: 
+    return "flow"
+  elif column[1:] in flowbytesColumns: 
+    return "flowbytes"
+  elif column[1:] in flowflagsColumns:
+    return "flowflags"
+  elif column[1:] in flowiatColumns:
+    return "flowiat"
+  elif column[1:] in flowinfoColumns:
+    return "flowinfo"
+  elif column[1:] in flowpacketsColumns:
+    return "flowpackets"
+
+
+
+
 def help(): 
   print('''
 These are the commands
 show
 write
+update
 To find details about a commands use help -<command>
         '''
         )
@@ -41,6 +171,13 @@ Filtering Options
 -source <source ip> -> show network data corresponding to a particular source 
 -dest <destination ip> -> show network data corresponding to a particlar destination
 '''    
+    )
+  elif command == "update": 
+    print(
+'''
+update: used to update a flow (using a known flow id)
+
+'''
     )
 
 def query(options): 
@@ -132,9 +269,106 @@ def query(options):
     writer.writerows(rows)
   cnx.close()
   print("Command successfully ran")
-def write(): 
-  print("This is the write function")
 
+def insert(options): 
+  table = options[0]
+  cnx = mysql.connector.connect(user='root',
+                                password= os.getenv('MySQLPassword'),
+                                host='localhost',
+                                database='internet_traffic')
+  cursor = cnx.cursor(dictionary=True)
+  if table == "flow":
+    print("Here")
+    cursor.execute(
+                    'insert into flow (source_ip, source_port, destination_ip, destination_port, protocol_id, timestamp, duration, label) values(%s, %s,%s,%s,%s,%s,%s,%s)',
+                    options[1:]
+                  )
+  elif table == "flowbytes":
+      cursor.execute(
+                    'insert into flowbytes (flow_id, bytes_per_second, fwd_bytes_bulk_avg, bwd_bytes_bulk_avg, fwd_subflow_bytes_avg, bwd_subflow_bytes_avg, fwd_init_win_bytes, bwd_init_win_bytes) values(%s, %s,%s,%s,%s,%s,%s,%s)',
+                    options[1:]
+                  )
+  elif table == "flowflags": 
+      cursor.execute(
+                    'insert into flowflags (flow_id,fwd_psh_flags, bwd_psh_flags, fwd_urg_flags, bwd_urg_flags, fin_flag_count, syn_flag_count, rst_flag_count, psh_flag_count, ack_flag_count, urg_flag_count, cwe_flag_count, ece_flag_count) values(%s, %s,%s,%s,%s,%s,%s,%s, %s, %s, %s, %s, %s)',
+                    options[1:]
+                  )
+  elif table == "flowiat": 
+      cursor.execute(
+                    'insert into flowiat (flow_id, iat_mean, iat_std, iat_max, iat_min, fwd_iat_total, fwd_iat_mean, fwd_iat_std, fwd_iat_max, fwd_iat_min, bwd_iat_total, bwd_iat_mean, bwd_iat_std, bwd_iat_max, bwd_iat_min) values(%s, %s,%s,%s,%s,%s,%s,%s, %s, %s, %s, %s, %s, %s, %s)',
+                    options[1:]
+                  )
+  elif table == "flowinfo": 
+      cursor.execute(
+                    'insert into flowinfo (flow_id, fwd_header_length, bwd_header_length, down_up_ratio, fwd_segment_size_avg, bwd_segment_size_avg, fwd_header_length_1, fwd_bulk_rate_avg, bwd_bulk_rate_avg, fwd_segment_size_min, active_time_mean, active_time_std, active_time_max, active_time_min, idle_time_mean, idle_time_std, idle_time_max, idle_time_min) values(%s, %s,%s,%s,%s,%s,%s,%s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s)',
+                    options[1:]
+                  )
+  elif table == "flowpackets":
+      cursor.execute(
+                    'insert into flowinfo (flow_id,fwd_packets,bwd_packets,fwd_packets_bytes,bwd_packets_bytes,fwd_packets_bytes_max,fwd_packets_bytes_min,fwd_packets_bytes_mean,fwd_packets_bytes_std,bwd_packets_bytes_max,bwd_packets_bytes_min,bwd_packets_bytes_mean,bwd_packets_bytes_std,packets_per_second,fwd_packets_per_second,bwd_packets_per_second,packet_length_min,packet_length_max,packet_length_mean,packet_length_std,packet_length_variance,packet_size_avg	fwd_packets_bulk_avg,bwd_packets_bulk_avg,fwd_subflow_packets_avg,bwd_subflow_packets_avg,fwd_act_data_packets) values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',
+                    options[1:]
+                  )
+  cnx.commit()
+  cursor.close()
+  cnx.close()
+  print("Insertion Successfully Completed")
+
+def update(options):
+  try:
+    flowid = options[0] 
+    options = options[1:]
+    commands = {}
+    cnx = mysql.connector.connect(user='root',
+                                password= os.getenv('MySQLPassword'),
+                                host='localhost',
+                                database='internet_traffic')
+    cursor = cnx.cursor(dictionary=True)
+    for i in range(0, len(options), 2):
+      table = findTable(options[i])
+      if table in commands: 
+        commands[table] = commands[table] + ", " + options[i][1:] + " = " + options[i+1]
+      else: 
+        print(options)
+        commands[table] = "update " + table + " set " + options[i][1:] + " = " + options[i+1]
+
+    for key in commands.keys(): 
+      print("Command:")
+      if key == "flow": 
+        command = commands[key] + " where id = " + flowid
+      else: 
+        command = commands[key] + " where flow_id = " + flowid
+      print(command)
+      cursor.execute(command)
+      print(cursor)      
+    
+    cnx.commit()
+    cnx.close()
+    cursor.close()
+    print("Update Complete")
+  except mysql.connector.Error as err:
+    print(err) 
+    print("Error in update command, please check command options or use help to get additional information")
+
+def delete(flowid): 
+  try:
+    cnx = mysql.connector.connect(user='root',
+                                password= os.getenv('MySQLPassword'),
+                                host='localhost',
+                                database='internet_traffic')
+    cursor = cnx.cursor(dictionary=True)
+    cursor.execute('delete from flow where id = {}'.format(flowid))
+    cursor.execute('delete from flowbytes where flow_id = {}'.format(flowid))
+    cursor.execute('delete from flowflags where flow_id = {}'.format(flowid))
+    cursor.execute('delete from flowiat where flow_id = {}'.format(flowid))
+    cursor.execute('delete from flowinfo where flow_id = {}'.format(flowid))
+    cursor.execute('delete from flowpackets where flow_id = {}'.format(flowid))
+    cnx.commit()
+    cnx.close()
+    cursor.close()
+    print("Deletion Complete")
+  except mysql.connector.Error as err:
+    print(err) 
+    print("Error in update command, please check command options or use help to get additional information")
 
 while True: 
   userInput = input()
@@ -147,4 +381,18 @@ while True:
       commandInfo(options[1])
     else: 
       help()
+  elif options[0] == "update": 
+    if "-timestamp" in options: 
+      timestampIndex = options.index("-timestamp")
+      options[timestampIndex + 1] = options[timestampIndex + 1] + " " + options[timestampIndex + 2]
+      options.pop(timestampIndex + 2)
+    update(options[1:]) 
+  elif options[0] == "delete":
+    delete(options[1])
+  elif options[0] == "insert": 
+    if options[1] == "flow": 
+      options[7] = options[7] + " " + options[8]
+      options.pop(8)
+    insert(options[1:])
+    
 
