@@ -177,12 +177,87 @@ Filtering Options
 '''
 update: used to update a flow (using a known flow id)
 
+Parameters
+-----------
+flowid (required) -> the id for the flow you are trying to update
+
+Basic Flow Information
+-----------------------
+-source_ip <string> -> update the source ip for the given flow 
+-source_port <integer> -> update that source port for the given flow 
+-destination_ip <string> -> update the destination ip for the given flow 
+-destination_port <integer> -> update the destination port for the given flow 
+-protocol_id <integer> -> update the protocol id for the given flow
+-timestamp <datetime> -> update the timestamp (eg datetime 2017-04-26 11:11:11) for the given flow
+-duration <integer> -> update the duration for the given flow 
+-label <string> -> update the label for the given flow 
+
+Flow Byte Information
+----------------------
+-bytes_per_second <int> -> update the bytes per second for the given flow
+-fwd_bytes_bulk_avg <decimal> -> update the average bytes bulk rate in the forward direction for the given flow
+-bwd_bytes_bulk_avg <decimal> -> update the average bytes bulk rate in the backward direction for the given flow
+-fwd_subflow_bytes_avg <decimal> -> update the average bytes in a subflow in the forward direction for the given flow
+-bwd_subflow_bytes_avg <decimal> -> update the average byutes in a subflow in the backward direction for the given flow
+-fwd_init_win_bytes <decimal> -> update the total bytes sent in the initial window in the forward direction for the given flow
+-bwd_init_win_bytes <decimal> -> update the total bytes sent in the initial window in the backward direction for the given flow
+
+Flow Flag Info
+---------------
+-fwd_psh_flags <int> -> update the number of packets sent in the forward direction that had the PSH flag set to 1 for the given flow
+-bwd_psh_flags <int> -> update the number of packets sent in the backward direction that had the PSH flag set to 1 for the given flow
+-fwd_urg_flags <int> -> update the number of packets sent in the forward direction that had the URG flag set to 1 for the given flow
+-bwd_urg_flags <int> -> update the number of packets sent in the backward direction that had the URG flag set to 1 for the given flow
+-fin_flag_count <int> -> update the number of packets sent in the flow that had the FIN flag set to 1 for the given flow
+-syn_flag_count <int> -> update the number of packets sent in the flow that had the SYN flag set to 1 for the given flow
+-rst_flag_count <int> -> update the number of packets sent in the flow that had the RST flag set to 1 for the given flow
+-psh_flag_count <int> -> update the number of packets sent in the flow that had the PSH flag set to 1 for the given flow
+-ack_flag_count <int> -> update the number of packets sent in the flow that had the ACK flag set to 1 for the given flow
+-urg_flag_count <int> -> update the number of packets sent in the flow that had the URG flag set to 1 for the given flow
+-cwe_flag_count <int> -> update the number of packets sent in the flow that had the CWE flag set to 1 for the given flow
+-ece_flag_count <int> -> update the number of packets sent in the flow that had the ECE flag set to 1 for the given flow
+
+IAT Info
+---------
+-iat_mean <decimal> -> update the mean inter-arrival time of the flow
+-iat_std <decimal> -> update the standard inter-arrival time of the flow 
+-iat_max <decimal> -> update the maximum inter-arrival time of the flow 
+-iat_min <decimal> -> update the minimum inter-arrival time of the flow 
+-fwd_iat_total <decimal> -> update the total inter-arrival time in the forward direction of the flow
+-bwd_iat_total <decimal> -> update the total inter-arrival time in the backward direction of the flow
+-fwd_iat_mean <decimal> -> update the mean inter-arrival time in the forward direction of the flow
+-bwd_iat_mean <decimal> -> update the mean inter-arrival time in the backward direction of the flow
+-fwd_iat_std <decimal> -> update the standard inter-arrival time in the forward direction of the flow
+-bwd_iat_std <decimal> -> update the standard inter-arrival time in the backward direction of the flow
+-fwd_iat_max <decimal> -> update the maximum inter-arrival time in the forward direction of the flow
+-bwd_iat_max <decimal> -> update the maximum inter-arrival time in the backward direction of the flow
+-fwd_iat_min <decimal> -> update the minimum inter-arrival time in the forward direction of the flow
+-bwd_iat_min <decimal> -> update the minimum inter-arrival time in the backward direction of the flow
+-fwd_header_length <decimal> -> update the forward header length for the given flow
+-bwd_header_length <decimal> -> update the backward header length for the given flow
+-down_up_ratio <decimal> -> update the download/upload ration for the given flow 
+-fwd_segment_size_avg <decimal> -> update the average segment size in the forward direction for the given flow 
+-bwd_segment_size_avg <decimal> -> update the average segment size in the backward direction for the given flow 
+
+Additional Flow Info
+---------------------
+-fwd_bulk_rate_avg <decimal> -> update the average number of bulk rate in the forward direction for the given flow
+-bwd_bulk_rate_avg <decimal> -> update the average number of bulk rate in the backward direction for the given flow
+-fwd_segment_size_min <decimal> -> update the minimum segment size in the forward direction for the given flow
+-active_time_mean <decimal> -> update the mean time the flow was active before becoming idle for the given flow 
+-active_time_std <decimal> -> update the standard time the flow was active before becoming idle for the given flow 
+-active_time_max <decimal> -> update the maximum time the flow was active before becoming idle for the given flow 
+-active_time_min <decimal> -> update the minimum time the flow was active before becoming idle for the given flow 
+-idle_time_mean <decimal> -> update the mean time the flow was idle for the given flow 
+-idle_time_std <decimal> -> update the standard time the flow was idle for the given flow 
+-idle_time_max <decimal> -> update the maximum time the flow was idle for the given flow 
+-idle_time_min <decimal> -> update the minimum time the flow was idle for the given flow 
 '''
     )
 
 def query(options): 
-  cnx = mysql.connector.connect(user='root',
-                              password= os.getenv('MySQLPassword'),
+  cnx = mysql.connector.connect(username,
+                              password= password,
                               host='localhost',
                               database='internet_traffic')
   cursor = cnx.cursor(dictionary=True)
@@ -272,13 +347,25 @@ def query(options):
 
 def insert(options): 
   table = options[0]
-  cnx = mysql.connector.connect(user='root',
-                                password= os.getenv('MySQLPassword'),
+  cnx = mysql.connector.connect(user=username,
+                                password= password,
                                 host='localhost',
                                 database='internet_traffic')
   cursor = cnx.cursor(dictionary=True)
   if table == "flow":
-    print("Here")
+    cursor.execute('select * from source where ip = %s and port = %s', (options[1], options[2]))
+    cursor.fetchone()
+    if cursor.rowcount == -1: 
+      cursor.execute('insert into source (ip, port) values (%s,%s)', [options[1], options[2]])
+
+    cursor.execute('select * from source where ip = %s and port = %s', (options[3], options[4]))
+    cursor.fetchone()
+    if cursor.rowcount == -1: 
+      cursor.execute('insert into destination (ip, port) values (%s,%s)', [options[3], options[4]])
+
+
+
+
     cursor.execute(
                     'insert into flow (source_ip, source_port, destination_ip, destination_port, protocol_id, timestamp, duration, label) values(%s, %s,%s,%s,%s,%s,%s,%s)',
                     options[1:]
@@ -318,8 +405,8 @@ def update(options):
     flowid = options[0] 
     options = options[1:]
     commands = {}
-    cnx = mysql.connector.connect(user='root',
-                                password= os.getenv('MySQLPassword'),
+    cnx = mysql.connector.connect(user=username,
+                                password= password,
                                 host='localhost',
                                 database='internet_traffic')
     cursor = cnx.cursor(dictionary=True)
@@ -351,8 +438,8 @@ def update(options):
 
 def delete(flowid): 
   try:
-    cnx = mysql.connector.connect(user='root',
-                                password= os.getenv('MySQLPassword'),
+    cnx = mysql.connector.connect(user=username,
+                                password= password,
                                 host='localhost',
                                 database='internet_traffic')
     cursor = cnx.cursor(dictionary=True)
@@ -370,6 +457,63 @@ def delete(flowid):
     print(err) 
     print("Error in update command, please check command options or use help to get additional information")
 
+def createNewUser(user, pw): 
+  cnx = mysql.connector.connect(user=username,
+                              password= password,
+                              host='localhost',
+                              database='internet_traffic')
+  cursor = cnx.cursor(dictionary=True)
+  cursor.execute("select * from mysql.user where User = %s", (user,))
+  cursor.fetchone()
+  if cursor.rowcount != -1:
+    print("User already exists") 
+    return 
+  cursor.execute("create user '%s'@'localhost' identified by '%s'", (user, pass))
+  print("User successfully created, update the user's permissions so they can start using this application")
+
+def createNewAdmin(user, pw): 
+  cnx = mysql.connector.connect(user=username,
+                              password= password,
+                              host='localhost',
+                              database='internet_traffic')
+  cursor = cnx.cursor(dictionary=True)
+  cursor.execute("select * from mysql.user where User = %s", (user,))
+  cursor.fetchone()
+  if cursor.rowcount != -1:
+    print("User already exists") 
+    return 
+
+def updateUserPermission():
+  cnx = mysql.connector.connect(user=username,
+                            password= password,
+                            host='localhost',
+                            database='internet_traffic')
+  cursor = cnx.cursor(dictionary=True)
+  cursor.execute("select ")
+  
+#logging in to the application
+username = ""
+password = ""
+while True:
+  try:
+    username = input("Please enter your username\n")
+    password = input("Please enter your password\n")
+    cnx = mysql.connector.connect(user=username,
+                                password= password,
+                                host='localhost',
+                                database='internet_traffic')
+    print("Successfully connected to database")
+    break
+  except mysql.connector.Error as err:
+    print(err)
+    if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+      print("Something is wrong with your user name or password")
+    elif err.errno == errorcode.ACC: 
+      print("This user doesnt have the correct access")
+
+
+
+#After the user logs into the application the commands are handled here
 while True: 
   userInput = input()
   #show all info between two dates
