@@ -25,6 +25,12 @@ def main():
     # feature_cols = ['Flow ID', 'Source IP', 'Source Port', 'Destination IP', 'Destionation Port', 'Protocol', 'Timestamp', 'Flow Duration']
     y = pima[' Label'] # Target variable
     del pima[' Label']
+    del pima['Flow ID']
+    del pima[' Source IP']
+    del pima[' Destination IP']
+    del pima[' Timestamp']
+    del pima['External IP']
+# delete attributes that could not be converted to float since the api is trying to convert all the strings to float for making the decision tree
     X = pima # Features
     
 
