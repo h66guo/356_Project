@@ -43,7 +43,7 @@ def main():
     print("START CREATING")
 
     # Create Decision Tree classifer object
-    clf = DecisionTreeClassifier()
+    clf = DecisionTreeClassifier(criterion="entropy", max_depth=4)
 
     # Train Decision Tree Classifer
     clf = clf.fit(X_train,y_train)
@@ -56,9 +56,9 @@ def main():
     dot_data = StringIO()
     export_graphviz(clf, out_file=dot_data,  
                     filled=True, rounded=True,
-                    special_characters=True,feature_names = pima.columns,class_names=['0','1'])
+                    special_characters=True,feature_names = pima.columns,class_names=['no attack','Ddos'])
     graph = pydotplus.graph_from_dot_data(dot_data.getvalue())  
-    graph.write_png('diabetes.png')
+    graph.write_png('DM.png')
     Image(graph.create_png())
 
     
