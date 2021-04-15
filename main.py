@@ -138,10 +138,16 @@ def findTable(column):
 
 def help(): 
   print('''
-These are the commands
+These are the commands available:
 show
-write
+help 
 update
+delete 
+insert
+createuser
+createadmin
+grantuserpermission
+revokeuserpermission
 To find details about a commands use help -<command>
         '''
         )
@@ -172,7 +178,7 @@ Filtering Options
 -dest <destination ip> -> show network data corresponding to a particlar destination
 '''    
     )
-  elif command == "update": 
+  elif command == "-update": 
     print(
 '''
 update: used to update a flow (using a known flow id)
@@ -252,7 +258,106 @@ Additional Flow Info
 -idle_time_std <decimal> -> update the standard time the flow was idle for the given flow 
 -idle_time_max <decimal> -> update the maximum time the flow was idle for the given flow 
 -idle_time_min <decimal> -> update the minimum time the flow was idle for the given flow 
+
+Packet Info
+------------
+fwd_packets <decimal> -> update the number of packets in the forward direction for the given flow 
+bwd_packets <decimal> -> update the number of packets in the backward direction for the given flow
+fwd_packets_bytes <decimal> -> update the number of packets in the forward direction in bytes for the given flow
+bwd_packets_bytes <decimal> ->  update the number of packets in the backward direction in bytes for the given flow
+fwd_packets_bytes_max <decimal> -> update the maximum value in bytes of a packet in the forward direction for the given flow
+fwd_packets_bytes_min <decimal> -> update the minimum value in bytes of a packet in the forward direction for the given flow
+fwd_packets_bytes_mean <decimal> -> update the mean value in bytes of a packet in the forward direction for the given flow
+fwd_packets_bytes_std <decimal> -> update the standard value in bytes of a packet in the forward direction for the given flow
+bwd_packets_bytes_max <decimal> -> update the maximum value in bytes of a packet in the backward direction for the given flow
+bwd_packets_bytes_min <decimal> -> update the minimum value in bytes of a packet in the backward direction for the given flow
+bwd_packets_bytes_mean <decimal> -> update the mean value in bytes of a packet in the backward direction for the given flow
+bwd_packets_bytes_std <decimal> -> update the standard value in bytes of a packet in the backward direction for the given flow
+packets_per_second <decimal> -> update the packets per second for the given flow
+fwd_packets_per_second <decimal> -> update the packets per second in the forward direction for the given flow
+bwd_packets_per_second <decimal> -> update the packets per second in the backward direction for the given flow
+packet_length_min <decimal> -> update the minimum packet length for the given flow 
+packet_length_max <decimal> -> update the maximum packet length for the given flow
+packet_length_mean <decimal> -> update the mean packet length for the given flow
+packet_length_std <decimal> -> update the standard packet length for the given flow 
+packet_length_variance <decimal> -> update the packet length variance for the given flow 
+packet_size_avg <decimal> -> update the average packet size for the given flow
+fwd_packets_bulk_avg <decimal> -> update the average packets bulk in the forward direction for the given flow
+bwd_packets_bulk_avg <decimal> -> update the average packets bulk in the backward direction for the given flow
+fwd_subflow_packets_avg <decimal> -> update the average packets in subflow in the forward direction for the given flow
+bwd_subflow_packets_avg <decimal> -> update the average packets in subflow in the backward direction for the given flow
+fwd_act_data_packets <decimal> -> update the number of packets in the forward direction with at lease one byte of TCP data payload for the given flow
 '''
+    )
+  elif command == "-delete": 
+    print(
+      '''
+delete: used to delete all the data corresponding to a particular flow
+Parameters
+------------
+flowid(required) -> the id of the flow that you are trying to delete info for
+      '''
+    )
+  elif command == "-insert":
+    print(
+      '''
+insert: used to insert data into the database 
+Parameters
+-----------
+infoType (required) <string> -> used to specify the type of data being inserted (one of "flow", "flowbytes", "flowflags", "flowiat", "flowinfo", "flowpackets") 
+
+Information To Be Inserted
+----------------------------
+Depending on the type of information being inserted, this function requires different arguments
+Please see the ReadMe on the github repository to verify what is required for the different information types.
+      '''
+    )
+  elif command == "-createuser":
+    print(
+      '''
+createuser: used to create a new user (requires current user to be an admin)
+NOTE: newly created users have no permissions on this application when first created and the grantuserpermission command is needed to initialize their permission
+
+Parameters
+-----------
+username <string>: the username of the new user (must be unique)
+password <string>: the password of the new user 
+      '''
+    )
+  elif command == "-createadmin":
+    print(
+      '''
+createadmin: used to create an admin that has complete access to the database (including creating new users)
+
+Parameters
+-----------
+username <string>: the username of the new admin (must be unique)
+password <string>: the password of the new admin
+      '''
+    )
+  elif command == "-grantuserpermission":
+    print(
+      '''
+grantuserpermission: used to grant permission to a user 
+NOTE: must be logged into an admin user to use this command
+
+Parameters
+-----------
+privilege type (required) <string>: one of 'select' (allows viewing), 'update' (allows use of update command), 'insert' (allows use of insert command), and 'delete' (allows use of delete command) 
+information types (required) <string>: type of information that permission pertains to (one or more of 'flow', 'flowbytes', 'flowflags', 'flowiat', 'flowinfo', 'flowpackets', 'source', 'protocol')
+username <string>: the username of the user that you are trying to grant permission to
+      '''
+    )
+  elif command == "-revokeuserpermission": 
+    print(
+      '''
+revokeuserpermission: used to remove permissions from a user
+NOTE: must be logged into an admin user to user this command 
+
+Parameters
+-----------
+The parameters are the same parameters used in the 'grantuserpermission' command
+      '''
     )
 
 def query(options): 
@@ -468,8 +573,11 @@ def createNewUser(user, pw):
   if cursor.rowcount != -1:
     print("User already exists") 
     return 
-  cursor.execute("create user '%s'@'localhost' identified by '%s'", (user, pass))
+  cursor.execute("create user '{}'@'localhost' identified by '{}'".format(user, pw))
   print("User successfully created, update the user's permissions so they can start using this application")
+  cnx.commit()
+  cursor.close()
+  cnx.close()
 
 def createNewAdmin(user, pw): 
   cnx = mysql.connector.connect(user=username,
@@ -481,15 +589,46 @@ def createNewAdmin(user, pw):
   cursor.fetchone()
   if cursor.rowcount != -1:
     print("User already exists") 
-    return 
+    return
+  cursor.execute("create user '{}'@'localhost' identified by '{}'".format(user, pw))
+  cursor.execute("GRANT ALL PRIVILEGES ON internet_traffic.* TO '{}'@'localhost'".format(user))
+  cursor.execute("flush privileges")
+  cnx.commit()
+  cursor.close()
+  cnx.close()
+  print("New admin successfully created")
+  
 
-def updateUserPermission():
+def updateUserPermission(privilege, informationTypes, user):
   cnx = mysql.connector.connect(user=username,
                             password= password,
                             host='localhost',
                             database='internet_traffic')
   cursor = cnx.cursor(dictionary=True)
-  cursor.execute("select ")
+  for table in informationTypes: 
+    cursor.execute("GRANT {} ON internet_traffic.{} TO '{}'@'localhost'".format(privilege, table, user))
+    cursor.execute("flush privileges")
+  cnx.commit()
+  cursor.close()
+  cnx.close()
+  print("{}'s permissions were updated successfully".format(user))
+
+
+def revokeuserpermission(privilege, informationTypes, user):
+  cnx = mysql.connector.connect(user=username,
+                            password= password,
+                            host='localhost',
+                            database='internet_traffic')
+  cursor = cnx.cursor(dictionary=True)
+  for table in informationTypes: 
+    cursor.execute("revoke {} ON internet_traffic.{} TO '{}'@'localhost'".format(privilege, table, user))
+    cursor.execute("flush privileges")
+  cnx.commit()
+  cursor.close()
+  cnx.close()
+  print("{}'s permissions were updated successfully".format(user))
+
+
   
 #logging in to the application
 username = ""
@@ -538,5 +677,12 @@ while True:
       options[7] = options[7] + " " + options[8]
       options.pop(8)
     insert(options[1:])
-    
+  elif options[0] == "createuser": 
+    createNewUser(options[1], options[2])
+  elif options[0] == "createadmin":
+    createNewAdmint(options[1], options[2])
+  elif options[0] == "grantuserpermission": 
+    updateUserPermission(options[1], options[2:len(options)-1], options[len(options)-1])
+  elif options[0] == "revokeuserpermission": 
+    revokeuserpermission(options[1], options[2:len(options)-1], options[len(options)-1])
 
