@@ -64,103 +64,103 @@ Following the flowid are the series of attributes followed by the update values.
 
 ##### Basic Flow Information
 -----------------------
--source_ip <string>: update the source ip for the given flow<br>
--source_port <integer>: update that source port for the given flow <br>
--destination_ip <string>: update the destination ip for the given flow <br>
--destination_port <integer>: update the destination port for the given flow <br>
--protocol_id <integer>: update the protocol id for the given flow <br>
--timestamp <datetime>: update the timestamp (eg datetime 2017-04-26 11:11:11) for the given flow <br>
--duration <integer>: update the duration for the given flow <br>
--label <string>: update the label for the given flow <br>
+**-source_ip <string>:** update the source ip for the given flow<br>
+**-source_port <integer>:** update that source port for the given flow <br>
+**-destination_ip <string>:** update the destination ip for the given flow <br>
+**-destination_port <integer>:** update the destination port for the given flow <br>
+**-protocol_id <integer>:** update the protocol id for the given flow <br>
+**-timestamp <datetime>:** update the timestamp (eg datetime 2017-04-26 11:11:11) for the given flow <br>
+**-duration <integer>:** update the duration for the given flow <br>
+**-label <string>:** update the label for the given flow <br>
 
 ##### Flow Byte Information
 ----------------------
--bytes_per_second <int>: update the bytes per second for the given flow <br>
--fwd_bytes_bulk_avg <decimal>: update the average bytes bulk rate in the forward direction for the given flow <br>
--bwd_bytes_bulk_avg <decimal>: update the average bytes bulk rate in the backward direction for the given flow <br>
--fwd_subflow_bytes_avg <decimal>: update the average bytes in a subflow in the forward direction for the given flow <br>
--bwd_subflow_bytes_avg <decimal>: update the average byutes in a subflow in the backward direction for the given flow <br>
--fwd_init_win_bytes <decimal>: update the total bytes sent in the initial window in the forward direction for the given flow <br>
--bwd_init_win_bytes <decimal>: update the total bytes sent in the initial window in the backward direction for the given flow <br>
+**-bytes_per_second <int>:** update the bytes per second for the given flow <br>
+**-fwd_bytes_bulk_avg <decimal>:** update the average bytes bulk rate in the forward direction for the given flow <br>
+**-bwd_bytes_bulk_avg <decimal>:** update the average bytes bulk rate in the backward direction for the given flow <br>
+**-fwd_subflow_bytes_avg <decimal>:** update the average bytes in a subflow in the forward direction for the given flow <br>
+**-bwd_subflow_bytes_avg <decimal>:** update the average byutes in a subflow in the backward direction for the given flow <br>
+**-fwd_init_win_bytes <decimal>:** update the total bytes sent in the initial window in the forward direction for the given flow <br>
+**-bwd_init_win_bytes <decimal>:** update the total bytes sent in the initial window in the backward direction for the given flow <br>
 
 ##### Flow Flag Info
 ---------------
--fwd_psh_flags <int>: update the number of packets sent in the forward direction that had the PSH flag set to 1 for the given flow <br>
--bwd_psh_flags <int>: update the number of packets sent in the backward direction that had the PSH flag set to 1 for the given flow <br>
--fwd_urg_flags <int>: update the number of packets sent in the forward direction that had the URG flag set to 1 for the given flow<br>
--bwd_urg_flags <int>: update the number of packets sent in the backward direction that had the URG flag set to 1 for the given flow<br>
--fin_flag_count <int>: update the number of packets sent in the flow that had the FIN flag set to 1 for the given flow<br>
--syn_flag_count <int>: update the number of packets sent in the flow that had the SYN flag set to 1 for the given flow<br>
--rst_flag_count <int>: update the number of packets sent in the flow that had the RST flag set to 1 for the given flow<br>
--psh_flag_count <int>: update the number of packets sent in the flow that had the PSH flag set to 1 for the given flow<br>
--ack_flag_count <int>: update the number of packets sent in the flow that had the ACK flag set to 1 for the given flow<br>
--urg_flag_count <int>: update the number of packets sent in the flow that had the URG flag set to 1 for the given flow<br>
--cwe_flag_count <int>: update the number of packets sent in the flow that had the CWE flag set to 1 for the given flow<br>
--ece_flag_count <int>: update the number of packets sent in the flow that had the ECE flag set to 1 for the given flow<br>
+**-fwd_psh_flags <int>:** update the number of packets sent in the forward direction that had the PSH flag set to 1 for the given flow <br>
+**-bwd_psh_flags <int>:** update the number of packets sent in the backward direction that had the PSH flag set to 1 for the given flow <br>
+**-fwd_urg_flags <int>:** update the number of packets sent in the forward direction that had the URG flag set to 1 for the given flow<br>
+**-bwd_urg_flags <int>:** update the number of packets sent in the backward direction that had the URG flag set to 1 for the given flow<br>
+**-fin_flag_count <int>:** update the number of packets sent in the flow that had the FIN flag set to 1 for the given flow<br>
+**-syn_flag_count <int>:** update the number of packets sent in the flow that had the SYN flag set to 1 for the given flow<br>
+**-rst_flag_count <int>:** update the number of packets sent in the flow that had the RST flag set to 1 for the given flow<br>
+**-psh_flag_count <int>:** update the number of packets sent in the flow that had the PSH flag set to 1 for the given flow<br>
+**-ack_flag_count <int>:** update the number of packets sent in the flow that had the ACK flag set to 1 for the given flow<br>
+**-urg_flag_count <int>:** update the number of packets sent in the flow that had the URG flag set to 1 for the given flow<br>
+**-cwe_flag_count <int>:** update the number of packets sent in the flow that had the CWE flag set to 1 for the given flow<br>
+**-ece_flag_count <int>:** update the number of packets sent in the flow that had the ECE flag set to 1 for the given flow<br>
 
 ##### IAT Info
 ---------
--iat_mean <decimal>: update the mean inter-arrival time of the flow<br>
--iat_std <decimal>: update the standard inter-arrival time of the flow <br>
--iat_max <decimal>: update the maximum inter-arrival time of the flow <br>
--iat_min <decimal>: update the minimum inter-arrival time of the flow <br>
--fwd_iat_total <decimal>: update the total inter-arrival time in the forward direction of the flow<br>
--bwd_iat_total <decimal>: update the total inter-arrival time in the backward direction of the flow<br>
--fwd_iat_mean <decimal>: update the mean inter-arrival time in the forward direction of the flow<br>
--bwd_iat_mean <decimal>: update the mean inter-arrival time in the backward direction of the flow<br>
--fwd_iat_std <decimal>: update the standard inter-arrival time in the forward direction of the flow<br>
--bwd_iat_std <decimal>: update the standard inter-arrival time in the backward direction of the flow<br>
--fwd_iat_max <decimal>: update the maximum inter-arrival time in the forward direction of the flow<br>
--bwd_iat_max <decimal>: update the maximum inter-arrival time in the backward direction of the flow<br>
--fwd_iat_min <decimal>: update the minimum inter-arrival time in the forward direction of the flow<br>
--bwd_iat_min <decimal>: update the minimum inter-arrival time in the backward direction of the flow<br>
--fwd_header_length <decimal>: update the forward header length for the given flow<br>
--bwd_header_length <decimal>: update the backward header length for the given flow<br>
--down_up_ratio <decimal>: update the download/upload ration for the given flow <br>
--fwd_segment_size_avg <decimal>: update the average segment size in the forward direction for the given flow <br>
--bwd_segment_size_avg <decimal>: update the average segment size in the backward direction for the given flow <br>
+**-iat_mean <decimal>:** update the mean inter-arrival time of the flow<br>
+**-iat_std <decimal>:** update the standard inter-arrival time of the flow <br>
+**-iat_max <decimal>:** update the maximum inter-arrival time of the flow <br>
+**-iat_min <decimal>:** update the minimum inter-arrival time of the flow <br>
+**-fwd_iat_total <decimal>:** update the total inter-arrival time in the forward direction of the flow<br>
+**-bwd_iat_total <decimal>:** update the total inter-arrival time in the backward direction of the flow<br>
+**-fwd_iat_mean <decimal>:** update the mean inter-arrival time in the forward direction of the flow<br>
+**-bwd_iat_mean <decimal>:** update the mean inter-arrival time in the backward direction of the flow<br>
+**-fwd_iat_std <decimal>:** update the standard inter-arrival time in the forward direction of the flow<br>
+**-bwd_iat_std <decimal>:** update the standard inter-arrival time in the backward direction of the flow<br>
+**-fwd_iat_max <decimal>:** update the maximum inter-arrival time in the forward direction of the flow<br>
+**-bwd_iat_max <decimal>:** update the maximum inter-arrival time in the backward direction of the flow<br>
+**-fwd_iat_min <decimal>:** update the minimum inter-arrival time in the forward direction of the flow<br>
+**-bwd_iat_min <decimal>:** update the minimum inter-arrival time in the backward direction of the flow<br>
+**-fwd_header_length <decimal>:** update the forward header length for the given flow<br>
+**-bwd_header_length <decimal>:** update the backward header length for the given flow<br>
+**-down_up_ratio <decimal>:** update the download/upload ration for the given flow <br>
+**-fwd_segment_size_avg <decimal>:** update the average segment size in the forward direction for the given flow <br>
+**-bwd_segment_size_avg <decimal>:** update the average segment size in the backward direction for the given flow <br>
 
 ##### Additional Flow Info
 ---------------------
--fwd_bulk_rate_avg <decimal>: update the average number of bulk rate in the forward
+**-fwd_bulk_rate_avg <decimal>:** update the average number of bulk rate in the forward
 direction for the given flow<br>
--bwd_bulk_rate_avg <decimal>: update the average number of bulk rate in the backward
+**-bwd_bulk_rate_avg <decimal>:** update the average number of bulk rate in the backward
 direction for the given flow<br>
--fwd_segment_size_min <decimal>: update the minimum segment size in the forward direction for the given flow<br>
--active_time_mean <decimal>: update the mean time the flow was active before becoming idle for the given flow <br>
--active_time_std <decimal>: update the standard time the flow was active before becoming idle for the given flow <br>
--active_time_max <decimal>: update the maximum time the flow was active before becoming idle for the given flow <br>
--active_time_min <decimal>: update the minimum time the flow was active before becoming idle for the given flow <br>
--idle_time_mean <decimal>: update the mean time the flow was idle for the given flow <br>
--idle_time_std <decimal>: update the standard time the flow was idle for the given flow <br>
--idle_time_max <decimal>: update the maximum time the flow was idle for the given flow <br>
--idle_time_min <decimal>: update the minimum time the flow was idle for the given flow <br>
+**-fwd_segment_size_min <decimal>:** update the minimum segment size in the forward direction for the given flow<br>
+**-active_time_mean <decimal>:** update the mean time the flow was active before becoming idle for the given flow <br>
+**-active_time_std <decimal>:** update the standard time the flow was active before becoming idle for the given flow <br>
+**-active_time_max <decimal>:** update the maximum time the flow was active before becoming idle for the given flow <br>
+**-active_time_min <decimal>:** update the minimum time the flow was active before becoming idle for the given flow <br>
+**-idle_time_mean <decimal>:** update the mean time the flow was idle for the given flow <br>
+**-idle_time_std <decimal>:** update the standard time the flow was idle for the given flow <br>
+**-idle_time_max <decimal>:** update the maximum time the flow was idle for the given flow <br>
+**-idle_time_min <decimal>:** update the minimum time the flow was idle for the given flow <br>
 
 ##### Packet Info
 ------------
-fwd_packets <decimal>: update the number of packets in the forward direction for the given flow <br>
-bwd_packets <decimal>: update the number of packets in the backward direction for the given flow<br>
-fwd_packets_bytes <decimal>: update the number of packets in the forward direction in bytes for the given flow<br>
-bwd_packets_bytes <decimal>:  update the number of packets in the backward direction in bytes for the given flow<br>
-fwd_packets_bytes_max <decimal>: update the maximum value in bytes of a packet in the forward direction for the given flow<br>
-fwd_packets_bytes_min <decimal>: update the minimum value in bytes of a packet in the forward direction for the given flow<br>
-fwd_packets_bytes_mean <decimal>: update the mean value in bytes of a packet in the forward direction for the given flow<br>
-fwd_packets_bytes_std <decimal>: update the standard value in bytes of a packet in the forward direction for the given flow<br>
-bwd_packets_bytes_max <decimal>: update the maximum value in bytes of a packet in the backward direction for the given flow<br>
-bwd_packets_bytes_min <decimal>: update the minimum value in bytes of a packet in the backward direction for the given flow<br>
-bwd_packets_bytes_mean <decimal>: update the mean value in bytes of a packet in the backward direction for the given flow<br>
-bwd_packets_bytes_std <decimal>: update the standard value in bytes of a packet in the backward direction for the given flow<br>
-packets_per_second <decimal>: update the packets per second for the given flow<br>
-fwd_packets_per_second <decimal>: update the packets per second in the forward direction for the given flow<br>
-bwd_packets_per_second <decimal>: update the packets per second in the backward direction for the given flow<br>
-packet_length_min <decimal>: update the minimum packet length for the given flow <br>
-packet_length_max <decimal>: update the maximum packet length for the given flow<br>
-packet_length_mean <decimal>: update the mean packet length for the given flow<br>
-packet_length_std <decimal>: update the standard packet length for the given flow <br>
-packet_length_variance <decimal>: update the packet length variance for the given flow <br>
-packet_size_avg <decimal>: update the average packet size for the given flow<br>
-fwd_packets_bulk_avg <decimal>: update the average packets bulk in the forward direction for the given flow<br>
-bwd_packets_bulk_avg <decimal>: update the average packets bulk in the backward direction for the given flow<br>
-fwd_subflow_packets_avg <decimal>: update the average packets in subflow in the forward direction for the given flow<br>
-bwd_subflow_packets_avg <decimal>: update the average packets in subflow in the backward direction for the given flow<br>
-fwd_act_data_packets <decimal>: update the number of packets in the forward direction with at lease one byte of TCP data payload for the given flow<br>
+**-fwd_packets <decimal>:** update the number of packets in the forward direction for the given flow <br>
+**-bwd_packets <decimal>:** update the number of packets in the backward direction for the given flow<br>
+**-fwd_packets_bytes <decimal>:** update the number of packets in the forward direction in bytes for the given flow<br>
+**-bwd_packets_bytes <decimal>:**  update the number of packets in the backward direction in bytes for the given flow<br>
+**-fwd_packets_bytes_max <decimal>:** update the maximum value in bytes of a packet in the forward direction for the given flow<br>
+**-fwd_packets_bytes_min <decimal>:** update the minimum value in bytes of a packet in the forward direction for the given flow<br>
+**-fwd_packets_bytes_mean <decimal>:** update the mean value in bytes of a packet in the forward direction for the given flow<br>
+**-fwd_packets_bytes_std <decimal>:** update the standard value in bytes of a packet in the forward direction for the given flow<br>
+**-bwd_packets_bytes_max <decimal>:** update the maximum value in bytes of a packet in the backward direction for the given flow<br>
+**-bwd_packets_bytes_min <decimal>:** update the minimum value in bytes of a packet in the backward direction for the given flow<br>
+**-bwd_packets_bytes_mean <decimal>:** update the mean value in bytes of a packet in the backward direction for the given flow<br>
+**-bwd_packets_bytes_std <decimal>:** update the standard value in bytes of a packet in the backward direction for the given flow<br>
+**-packets_per_second <decimal>:** update the packets per second for the given flow<br>
+**-fwd_packets_per_second <decimal>:** update the packets per second in the forward direction for the given flow<br>
+**-bwd_packets_per_second <decimal>:** update the packets per second in the backward direction for the given flow<br>
+**-packet_length_min <decimal>:** update the minimum packet length for the given flow <br>
+**-packet_length_max <decimal>:** update the maximum packet length for the given flow<br>
+**-packet_length_mean <decimal>:** update the mean packet length for the given flow<br>
+**-packet_length_std <decimal>:** update the standard packet length for the given flow <br>
+**-packet_length_variance <decimal>:** update the packet length variance for the given flow <br>
+**-packet_size_avg <decimal>:** update the average packet size for the given flow<br>
+**-fwd_packets_bulk_avg <decimal>:** update the average packets bulk in the forward direction for the given flow<br>
+**-bwd_packets_bulk_avg <decimal>:** update the average packets bulk in the backward direction for the given flow<br>
+**-fwd_subflow_packets_avg <decimal>:** update the average packets in subflow in the forward direction for the given flow<br>
+**-bwd_subflow_packets_avg <decimal>:** update the average packets in subflow in the backward direction for the given flow<br>
+**-fwd_act_data_packets <decimal>:** update the number of packets in the forward direction with at lease one byte of TCP data payload for the given flow<br>
