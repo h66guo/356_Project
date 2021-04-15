@@ -43,7 +43,7 @@ def main():
     print("START CREATING")
 
     # Create Decision Tree classifer object
-    clf = DecisionTreeClassifier(criterion="entropy", max_depth=4)
+    clf = DecisionTreeClassifier(criterion="gini", max_depth=4)
 
     # Train Decision Tree Classifer
     clf = clf.fit(X_train,y_train)
