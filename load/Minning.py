@@ -24,11 +24,18 @@ def main():
     print(pima.columns)
     # feature_cols = ['Flow ID', 'Source IP', 'Source Port', 'Destination IP', 'Destionation Port', 'Protocol', 'Timestamp', 'Flow Duration']
     y = pima[' Label'] # Target variable
+
+    pima[' Source IP']=pd.Categorical(pd.factorize(pima[' Source IP'])[0])
+    pima[' Destination IP']=pd.Categorical(pd.factorize(pima[' Destination IP'])[0])
+    pima[' Timestamp']= pd.Categorical(pd.factorize(pima[' Timestamp'])[0])
+    pima['Flow ID']= pd.Categorical(pd.factorize(pima['Flow ID'])[0])
+    print("trying to convert source IPPPPP", pima[' Source IP'])
+
     del pima[' Label']
-    del pima['Flow ID']
-    del pima[' Source IP']
-    del pima[' Destination IP']
-    del pima[' Timestamp']
+    # del pima['Flow ID']
+    # del pima[' Source IP']
+    # del pima[' Destination IP']
+    # del pima[' Timestamp']
     del pima['External IP']
     del pima['Flow Bytes/s']
     del pima[' Flow Packets/s']
@@ -43,7 +50,7 @@ def main():
     print("START CREATING")
 
     # Create Decision Tree classifer object
-    clf = DecisionTreeClassifier(criterion="gini", max_depth=4)
+    clf = DecisionTreeClassifier(criterion="gini", max_depth=5)
 
     # Train Decision Tree Classifer
     clf = clf.fit(X_train,y_train)
@@ -51,14 +58,32 @@ def main():
     #Predict the response for test dataset
     y_pred = clf.predict(X_test)
 
-    print("Accuracy:",metrics.accuracy_score(y_test, y_pred))
+    print("Accuracy using gini index:",metrics.accuracy_score(y_test, y_pred))
 
     dot_data = StringIO()
     export_graphviz(clf, out_file=dot_data,  
                     filled=True, rounded=True,
                     special_characters=True,feature_names = pima.columns,class_names=['no attack','Ddos'])
     graph = pydotplus.graph_from_dot_data(dot_data.getvalue())  
-    graph.write_png('DM.png')
+    graph.write_png('DM_gini.png')
+    Image(graph.create_png())
+
+    clf = DecisionTreeClassifier(criterion="entropy", max_depth=5)
+
+    # Train Decision Tree Classifer
+    clf = clf.fit(X_train,y_train)
+
+    #Predict the response for test dataset
+    y_pred = clf.predict(X_test)
+
+    print("Accuracy using entropy index:",metrics.accuracy_score(y_test, y_pred))
+
+    dot_data = StringIO()
+    export_graphviz(clf, out_file=dot_data,  
+                    filled=True, rounded=True,
+                    special_characters=True,feature_names = pima.columns,class_names=['no attack','Ddos'])
+    graph = pydotplus.graph_from_dot_data(dot_data.getvalue())  
+    graph.write_png('DM_entropy.png')
     Image(graph.create_png())
 
     
