@@ -52,6 +52,7 @@ def main():
     # Create Decision Tree classifer object
     clf = DecisionTreeClassifier(criterion="gini", max_depth=5)
 
+    
     # Train Decision Tree Classifer
     clf = clf.fit(X_train,y_train)
 
@@ -63,7 +64,7 @@ def main():
     dot_data = StringIO()
     export_graphviz(clf, out_file=dot_data,  
                     filled=True, rounded=True,
-                    special_characters=True,feature_names = pima.columns,class_names=['no attack','Ddos'])
+                    special_characters=True,feature_names = pima.columns,class_names=['Benign','Ddos'])
     graph = pydotplus.graph_from_dot_data(dot_data.getvalue())  
     graph.write_png('DM_gini.png')
     Image(graph.create_png())
@@ -81,7 +82,7 @@ def main():
     dot_data = StringIO()
     export_graphviz(clf, out_file=dot_data,  
                     filled=True, rounded=True,
-                    special_characters=True,feature_names = pima.columns,class_names=['no attack','Ddos'])
+                    special_characters=True,feature_names = pima.columns,class_names=['Benign','Ddos'])
     graph = pydotplus.graph_from_dot_data(dot_data.getvalue())  
     graph.write_png('DM_entropy.png')
     Image(graph.create_png())
