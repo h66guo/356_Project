@@ -65,7 +65,7 @@ Following the flowid are the series of attributes followed by the update values.
 ##### Basic Flow Information
 -----------------------
 -source_ip <string>: update the source ip for the given flow<br>
--source_port <integer>: update that source port for the given flow 
+-source_port <integer>: update that source port for the given flow <br>
 -destination_ip <string>: update the destination ip for the given flow 
 -destination_port <integer>: update the destination port for the given flow 
 -protocol_id <integer>: update the protocol id for the given flow
