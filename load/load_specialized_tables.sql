@@ -23,7 +23,9 @@ SELECT 'Create Source' AS '';
 CREATE TABLE Source (
   ip                    VARCHAR(15)     NOT NULL,
   port                  DECIMAL(5, 0)   NOT NULL,
-  PRIMARY KEY (ip, port)
+  PRIMARY KEY (ip, port),
+  CHECK (ip REGEXP '^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$'),
+  CHECK (port >= 0 AND port <= 65535)
 );
 
 INSERT INTO Source
@@ -38,7 +40,9 @@ SELECT 'Create Destination' AS '';
 CREATE TABLE Destination (
   ip                    VARCHAR(15)     NOT NULL,
   port                  DECIMAL(5, 0)   NOT NULL,
-  PRIMARY KEY (ip, port)
+  PRIMARY KEY (ip, port),
+  CHECK (ip REGEXP '^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$'),
+  CHECK (port >= 0 AND port <= 65535)
 );
 
 INSERT INTO Destination
@@ -56,7 +60,9 @@ CREATE TABLE Protocol (
   number                DECIMAL(2, 0)   NOT NULL,
   l7_number             DECIMAL(4, 0),
   name                  VARCHAR(32),
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  CHECK (number >= 0),
+  CHECK (l7_number >= 0)
 );
 
 INSERT INTO Protocol
@@ -84,7 +90,8 @@ CREATE TABLE Flow (
   PRIMARY KEY (id),
   FOREIGN KEY (source_ip, source_port) REFERENCES Source(ip, port),
   FOREIGN KEY (destination_ip, destination_port) REFERENCES Destination(ip, port),
-  FOREIGN KEY (protocol_id) REFERENCES Protocol(id)
+  FOREIGN KEY (protocol_id) REFERENCES Protocol(id),
+  CHECK (duration >= 0)
 );
 
 INSERT INTO Flow
@@ -102,7 +109,7 @@ SELECT
       AND ((b.protocol_name IS NULL AND p.name IS NULL) OR p.name = b.protocol_name)
   ), 
   b.timestamp, 
-  b.duration, 
+  IF(b.duration >= 0, b.duration, NULL),
   b.label
 FROM BaseFlow b;
 
@@ -128,26 +135,40 @@ CREATE TABLE FlowIAT (
   bwd_iat_max           DECIMAL(16, 0),
   bwd_iat_min           DECIMAL(16, 0),
   PRIMARY KEY (flow_id),
-  FOREIGN KEY (flow_id) REFERENCES Flow(id) ON UPDATE CASCADE ON DELETE CASCADE
+  FOREIGN KEY (flow_id) REFERENCES Flow(id) ON UPDATE CASCADE ON DELETE CASCADE,
+  CHECK (iat_mean       >= 0),
+  CHECK (iat_std        >= 0),
+  CHECK (iat_max        >= 0),
+  CHECK (iat_min        >= 0),
+  CHECK (fwd_iat_total  >= 0),
+  CHECK (fwd_iat_mean   >= 0),
+  CHECK (fwd_iat_std    >= 0),
+  CHECK (fwd_iat_max    >= 0),
+  CHECK (fwd_iat_min    >= 0),
+  CHECK (bwd_iat_total  >= 0),
+  CHECK (bwd_iat_mean   >= 0),
+  CHECK (bwd_iat_std    >= 0),
+  CHECK (bwd_iat_max    >= 0),
+  CHECK (bwd_iat_min    >= 0)
 );
 
 INSERT INTO FlowIAT
 SELECT
-  id                    ,
-  iat_mean              ,
-  iat_std               ,
-  iat_max               ,
-  iat_min               ,
-  fwd_iat_total         ,
-  fwd_iat_mean          ,
-  fwd_iat_std           ,
-  fwd_iat_max           ,
-  fwd_iat_min           ,
-  bwd_iat_total         ,
-  bwd_iat_mean          ,
-  bwd_iat_std           ,
-  bwd_iat_max           ,
-  bwd_iat_min
+  id,
+  IF(iat_mean      >= 0, iat_mean,      NULL),
+  IF(iat_std       >= 0, iat_std,       NULL),
+  IF(iat_max       >= 0, iat_max,       NULL),
+  IF(iat_min       >= 0, iat_min,       NULL),
+  IF(fwd_iat_total >= 0, fwd_iat_total, NULL),
+  IF(fwd_iat_mean  >= 0, fwd_iat_mean,  NULL),
+  IF(fwd_iat_std   >= 0, fwd_iat_std,   NULL),
+  IF(fwd_iat_max   >= 0, fwd_iat_max,   NULL),
+  IF(fwd_iat_min   >= 0, fwd_iat_min,   NULL),
+  IF(bwd_iat_total >= 0, bwd_iat_total, NULL),
+  IF(bwd_iat_mean  >= 0, bwd_iat_mean,  NULL),
+  IF(bwd_iat_std   >= 0, bwd_iat_std,   NULL),
+  IF(bwd_iat_max   >= 0, bwd_iat_max,   NULL),
+  IF(bwd_iat_min   >= 0, bwd_iat_min,   NULL)
 FROM BaseFlow;
 
 -- **************************
@@ -184,7 +205,33 @@ CREATE TABLE FlowPackets (
   bwd_subflow_packets_avg DECIMAL(24, 16),
   fwd_act_data_packets    DECIMAL(8, 0),
   PRIMARY KEY (flow_id),
-  FOREIGN KEY (flow_id) REFERENCES Flow(id) ON UPDATE CASCADE ON DELETE CASCADE
+  FOREIGN KEY (flow_id) REFERENCES Flow(id) ON UPDATE CASCADE ON DELETE CASCADE,
+  CHECK (fwd_packets              >= 0),  
+  CHECK (bwd_packets              >= 0), 
+  CHECK (fwd_packets_bytes        >= 0), 
+  CHECK (bwd_packets_bytes        >= 0), 
+  CHECK (fwd_packets_bytes_max    >= 0), 
+  CHECK (fwd_packets_bytes_min    >= 0), 
+  CHECK (fwd_packets_bytes_mean   >= 0), 
+  CHECK (fwd_packets_bytes_std    >= 0), 
+  CHECK (bwd_packets_bytes_max    >= 0), 
+  CHECK (bwd_packets_bytes_min    >= 0), 
+  CHECK (bwd_packets_bytes_mean   >= 0), 
+  CHECK (bwd_packets_bytes_std    >= 0), 
+  CHECK (packets_per_second       >= 0), 
+  CHECK (fwd_packets_per_second   >= 0), 
+  CHECK (bwd_packets_per_second   >= 0), 
+  CHECK (packet_length_min        >= 0), 
+  CHECK (packet_length_max        >= 0), 
+  CHECK (packet_length_mean       >= 0), 
+  CHECK (packet_length_std        >= 0), 
+  CHECK (packet_length_variance   >= 0), 
+  CHECK (packet_size_avg          >= 0), 
+  CHECK (fwd_packets_bulk_avg     >= 0), 
+  CHECK (bwd_packets_bulk_avg     >= 0), 
+  CHECK (fwd_subflow_packets_avg  >= 0),
+  CHECK (bwd_subflow_packets_avg  >= 0),
+  CHECK (fwd_act_data_packets     >= 0)  
 );
 
 INSERT INTO FlowPackets
@@ -202,7 +249,7 @@ SELECT
   bwd_packets_bytes_min   ,
   bwd_packets_bytes_mean  ,
   bwd_packets_bytes_std   ,
-  packets_per_second      ,
+  IF(packets_per_second >= 0, packets_per_second, NULL),
   fwd_packets_per_second  ,
   bwd_packets_per_second  ,
   packet_length_min       ,
@@ -243,7 +290,24 @@ CREATE TABLE FlowInfo (
   idle_time_max           DECIMAL(16, 0),
   idle_time_min           DECIMAL(16, 0),
   PRIMARY KEY (flow_id),
-  FOREIGN KEY (flow_id) REFERENCES Flow(id) ON UPDATE CASCADE ON DELETE CASCADE
+  FOREIGN KEY (flow_id) REFERENCES Flow(id) ON UPDATE CASCADE ON DELETE CASCADE,
+  CHECK (fwd_header_length      >= 0), 
+  CHECK (bwd_header_length      >= 0), 
+  CHECK (down_up_ratio          >= 0), 
+  CHECK (fwd_segment_size_avg   >= 0), 
+  CHECK (bwd_segment_size_avg   >= 0), 
+  CHECK (fwd_header_length_1    >= 0), 
+  CHECK (fwd_bulk_rate_avg      >= 0), 
+  CHECK (bwd_bulk_rate_avg      >= 0), 
+  CHECK (fwd_segment_size_min   >= 0), 
+  CHECK (active_time_mean       >= 0), 
+  CHECK (active_time_std        >= 0), 
+  CHECK (active_time_max        >= 0), 
+  CHECK (active_time_min        >= 0), 
+  CHECK (idle_time_mean         >= 0), 
+  CHECK (idle_time_std          >= 0), 
+  CHECK (idle_time_max          >= 0), 
+  CHECK (idle_time_min          >= 0)
 );
 
 INSERT INTO FlowInfo
@@ -257,7 +321,7 @@ SELECT
   fwd_header_length_1     ,
   fwd_bulk_rate_avg       ,
   bwd_bulk_rate_avg       ,
-  fwd_segment_size_min    ,
+  IF(fwd_segment_size_min >= 0, fwd_segment_size_min, NULL),
   active_time_mean        ,
   active_time_std         ,
   active_time_max         ,
@@ -283,19 +347,26 @@ CREATE TABLE FlowBytes (
   fwd_init_win_bytes      DECIMAL(8, 0),
   bwd_init_win_bytes      DECIMAL(8, 0),
   PRIMARY KEY (flow_id),
-  FOREIGN KEY (flow_id) REFERENCES Flow(id) ON UPDATE CASCADE ON DELETE CASCADE
+  FOREIGN KEY (flow_id) REFERENCES Flow(id) ON UPDATE CASCADE ON DELETE CASCADE,
+  CHECK (bytes_per_second         >= 0),
+  CHECK (fwd_bytes_bulk_avg       >= 0),
+  CHECK (bwd_bytes_bulk_avg       >= 0),
+  CHECK (fwd_subflow_bytes_avg    >= 0),
+  CHECK (bwd_subflow_bytes_avg    >= 0),
+  CHECK (fwd_init_win_bytes       >= 0),
+  CHECK (bwd_init_win_bytes       >= 0)
 );
 
 INSERT INTO FlowBytes
 SELECT
   id                      ,
-  bytes_per_second        ,
+  IF(bytes_per_second >= 0, bytes_per_second, NULL),
   fwd_bytes_bulk_avg      ,
   bwd_bytes_bulk_avg      ,
   fwd_subflow_bytes_avg   ,
   bwd_subflow_bytes_avg   ,
-  fwd_init_win_bytes      ,
-  bwd_init_win_bytes
+  IF(fwd_init_win_bytes >= 0, fwd_init_win_bytes, NULL),
+  IF(bwd_init_win_bytes >= 0, bwd_init_win_bytes, NULL)
 FROM BaseFlow;
 
 -- ************************
@@ -318,7 +389,19 @@ CREATE TABLE FlowFlags (
   cwe_flag_count          DECIMAL(2, 0),
   ece_flag_count          DECIMAL(2, 0),
   PRIMARY KEY (flow_id),
-  FOREIGN KEY (flow_id) REFERENCES Flow(id) ON UPDATE CASCADE ON DELETE CASCADE
+  FOREIGN KEY (flow_id) REFERENCES Flow(id) ON UPDATE CASCADE ON DELETE CASCADE,
+  CHECK(fwd_psh_flags           >= 0),
+  CHECK(bwd_psh_flags           >= 0),
+  CHECK(fwd_urg_flags           >= 0),
+  CHECK(bwd_urg_flags           >= 0),
+  CHECK(fin_flag_count          >= 0),
+  CHECK(syn_flag_count          >= 0),
+  CHECK(rst_flag_count          >= 0),
+  CHECK(psh_flag_count          >= 0),
+  CHECK(ack_flag_count          >= 0),
+  CHECK(urg_flag_count          >= 0),
+  CHECK(cwe_flag_count          >= 0),
+  CHECK(ece_flag_count          >= 0)
 );
 
 INSERT INTO FlowFlags
