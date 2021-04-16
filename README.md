@@ -247,9 +247,18 @@ The grantuserpermission command grants permissions to a regular user (must be an
 **information types:** type of information that permission pertains to (one or more of <br> 'flow', 'flowbytes', 'flowflags', 'flowiat', 'flowinfo', 'flowpackets', 'source', 'protocol')
 **username:** username of the user that you are granting permission to
 
+```python
+#example grantuserpermission command
+grantuserpermission select flow flowbytes MartiniGuo #should allow MartiniGuo to query on flowbytes and flow given the user exists
+```
+
 ### revokeuserpermission
 The revokeuserpermission command works the same way as the grantuserpermission command but instead it revokes permission for that user
 #### Required Parameters 
 **privilege type:** one of 'select' (revokes viewing), 'update' (revokes use of update command), 'insert' (revokes use of insert command), and 'delete' (revokes use of delete command) <br>
 **information types:** type of information that permission pertains to (one or more of <br> 'flow', 'flowbytes', 'flowflags', 'flowiat', 'flowinfo', 'flowpackets', 'source', 'protocol') <br>
 **username:** username of the user that you are revoking permission from
+```python
+#example revokeuserpermission command
+revokeuserpermission select flow flowbytes MartiniGuo #should remove MartiniGuo's permissions to view flow and flowbytes
+```

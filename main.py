@@ -410,7 +410,7 @@ def query(options):
       else: 
         queryString += " and label = 'DDos'"
   #apply our default limit if it wasn't specified      
-  if "-limit" not in options and options[0] != "-clients": 
+  if "-limit" not in options: 
     queryString += " limit 50"
   #apply our default output csv file name if it wasn't specified
   if fileName == "": 
