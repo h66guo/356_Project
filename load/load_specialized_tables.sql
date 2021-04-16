@@ -5,15 +5,15 @@
 -- Show warnings after every statement
 warnings;
 
-DROP TABLE IF EXISTS Source;
-DROP TABLE IF EXISTS Destination;
-DROP TABLE IF EXISTS Protocol;
-DROP TABLE IF EXISTS Flow;
 DROP TABLE IF EXISTS FlowIAT;
 DROP TABLE IF EXISTS FlowPackets;
 DROP TABLE IF EXISTS FlowInfo;
 DROP TABLE IF EXISTS FlowBytes;
 DROP TABLE IF EXISTS FlowFlags;
+DROP TABLE IF EXISTS Flow;
+DROP TABLE IF EXISTS Source;
+DROP TABLE IF EXISTS Destination;
+DROP TABLE IF EXISTS Protocol;
 
 -- *********************
 -- *** Create Source ***
