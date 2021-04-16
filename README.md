@@ -49,23 +49,27 @@ The show command is used to display network statistics to the user. In addition,
 
 #### Required Parameters 
 **-a:** show all data 
-**-flowbytes:** show flow bytes data (cannot be used with -a)
-**-flowflags:** show flow flags data (cannot be used with -a)
-**-flowiat:** show inter-arrival times (cannot be used with -a)
-**-flowinfo:** show additional flow info such as time active, time idle, etc (cannot be used with -a)
-**-flowpackets:** show flow packets info (cannot be used with -a)
-**-protocol:** show flow protocol info (cannot be used with -a)
-**-clients:** show all clients (cannot be used with any other options)
+**-flowbytes:** show flow bytes data (cannot be used with -a) <br>
+**-flowflags:** show flow flags data (cannot be used with -a)<br>
+**-flowiat:** show inter-arrival times (cannot be used with -a)<br>
+**-flowinfo:** show additional flow info such as time active, time idle, etc (cannot be used with -a)<br>
+**-flowpackets:** show flow packets info (cannot be used with -a)<br>
+**-protocol:** show flow protocol info (cannot be used with -a)<br>
+**-clients:** show all clients (cannot be used with any other options)<br>
 
 ### Optional Parameters 
-**-limit \<int> :** specifiy the limit on the number of results returned (default set to 50)
-**-filename: \<string>** specifies the limit on the output filename (defaulted to out.csv)
-**-d \<start date> \<end date>:** show network data between a specified start date and end date
-**-sortasc \<sort parameter>:** sort data in ascending order based on sort parameter ('timestamp')
-**-sortdesc \<sort parameter>:** sort data in descending order based on sort parameter ('timestamp')
-**-ddos:** show network data that corresponded to a DDOS attack
-**-source \<source ip>:** show network data corresponding to a particular source 
-**-dest \<destination ip>:** show network data corresponding to a particlar destination
+**-limit \<int> :** specifiy the limit on the number of results returned (default set to 50)<br>
+**-filename: \<string>** specifies the limit on the output filename (defaulted to out.csv)<br>
+**-d \<start date> \<end date>:** show network data between a specified start date and end date<br>
+**-sortasc \<sort parameter>:** sort data in ascending order based on sort parameter (one of 'timestamp', 'protocol_id', 'label', 'bytes_per_second', 'syn_flag_count', 'duration')<br>
+**NOTE:** you can only use bytes_per_second when used in conjuction with -a or -flowbytes<br>
+**NOTE:** you can only use syn_flag_count when used in conjuction with -a or -flowflags<br>
+**-sortdesc \<sort parameter>:** sort data in descending order based on sort parameter (one of 'timestamp', 'protocol_id', 'label', 'bytes_per_second', 'syn_flag_count','duration')<br>
+**NOTE:** you can only use bytes_per_second when used in conjuction with -a or -flowbytes<br>
+**NOTE:** you can only use syn_flag_count when used in conjuction with -a or -flowflags<br>
+**-ddos:** show network data that corresponded to a DDOS attack<br>
+**-source \<source ip>:** show network data corresponding to a particular source <br>
+**-dest \<destination ip>:** show network data corresponding to a particlar destination<br>
 
 ```python
 #Here are some example show commands 

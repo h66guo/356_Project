@@ -168,8 +168,8 @@ Data Selector Options (at lease one of these following options must be used)
 Filtering Options
 ------------------
 -d <start date> <end date> -> show network data between a specified start date and end date
--sortasc <sort parameter> -> sort data in ascending order based on sort parameter ('timestamp')
--sortdesc <sort parameter> -> sort data in descending order based on sort parameter ('timestamp')
+-sortasc <sort parameter> -> sort data in ascending order based on sort parameter ('timestamp', 'protocol_id', 'label', 'bytes_per_second', 'syn_flag_count', 'duration')
+-sortdesc <sort parameter> -> sort data in descending order based on sort parameter ('timestamp', protocol_id', 'label', 'bytes_per_second', 'syn_flag_count', 'duration')
 -ddos -> show network data that corresponded to a DDOS attack
 -source <source ip> -> show network data corresponding to a particular source 
 -dest <destination ip> -> show network data corresponding to a particlar destination
