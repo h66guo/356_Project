@@ -1,6 +1,25 @@
 # Group 19 
 Internet Traffic
 
+# Setting Up Database
+### Loading Data
+
+There are two scripts for loading the data, both of which are under the `load/` directory. They expect the two CSV files [(1)](https://www.kaggle.com/jsrojas/ip-network-traffic-flows-labeled-with-87-apps?select=Dataset-Unicauca-Version2-87Atts.csv) and [(2)](https://www.kaggle.com/akshat4112/networkanamolydetection?select=Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv) to be located at `/var/lib/mysql-files`.
+
+To load the data, first create a database (i.e. `CREATE DATABASE InternetTraffic;` followed by `USE InternetTraffic;`). Then, run the script `load_base_tables.sql` first and finally, run `load_specialized_tables.sql`. 
+
+For example:
+
+`CREATE DATABASE InternetTraffic;`
+
+`USE InternetTraffic;`
+
+`SOURCE load_base_tables.sql;`
+
+`SOURCE load_specialized_tables.sql;`
+
+and the data should be loaded without errors or warnings.
+
 # Client Application
 The client application was created using Python and the MySQL Python connector library.
   Documentation for the library can be found [here](https://dev.mysql.com/doc/connector-python/en/). Furthermore, this application requires that you have setup the     database previously discussed and that it is running on 'localhost'. All the source code can be found in the "main.py" file. Lastly, the certain libraries must be installed for the application to run. Please use the following commands to do so:
