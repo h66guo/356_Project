@@ -62,7 +62,7 @@ The update command is used to update the information for a pre-existing flow.
 
 Following the flowid are the series of attributes followed by the update values. 
 
-##### Basic Flow Information
+##### Basic Flow Information (flow)
 -----------------------
 **-source_ip <string>:** update the source ip for the given flow<br>
 **-source_port <integer>:** update that source port for the given flow <br>
@@ -73,7 +73,7 @@ Following the flowid are the series of attributes followed by the update values.
 **-duration <integer>:** update the duration for the given flow <br>
 **-label <string>:** update the label for the given flow <br>
 
-##### Flow Byte Information
+##### Flow Byte Information (flowbytes)
 ----------------------
 **-bytes_per_second <int>:** update the bytes per second for the given flow <br>
 **-fwd_bytes_bulk_avg <decimal>:** update the average bytes bulk rate in the forward direction for the given flow <br>
@@ -83,7 +83,7 @@ Following the flowid are the series of attributes followed by the update values.
 **-fwd_init_win_bytes <decimal>:** update the total bytes sent in the initial window in the forward direction for the given flow <br>
 **-bwd_init_win_bytes <decimal>:** update the total bytes sent in the initial window in the backward direction for the given flow <br>
 
-##### Flow Flag Info
+##### Flow Flag Info (flowflags)
 ---------------
 **-fwd_psh_flags <int>:** update the number of packets sent in the forward direction that had the PSH flag set to 1 for the given flow <br>
 **-bwd_psh_flags <int>:** update the number of packets sent in the backward direction that had the PSH flag set to 1 for the given flow <br>
@@ -98,7 +98,7 @@ Following the flowid are the series of attributes followed by the update values.
 **-cwe_flag_count <int>:** update the number of packets sent in the flow that had the CWE flag set to 1 for the given flow<br>
 **-ece_flag_count <int>:** update the number of packets sent in the flow that had the ECE flag set to 1 for the given flow<br>
 
-##### IAT Info
+##### IAT Info (flowiat)
 ---------
 **-iat_mean <decimal>:** update the mean inter-arrival time of the flow<br>
 **-iat_std <decimal>:** update the standard inter-arrival time of the flow <br>
@@ -120,7 +120,7 @@ Following the flowid are the series of attributes followed by the update values.
 **-fwd_segment_size_avg <decimal>:** update the average segment size in the forward direction for the given flow <br>
 **-bwd_segment_size_avg <decimal>:** update the average segment size in the backward direction for the given flow <br>
 
-##### Additional Flow Info
+##### Additional Flow Info (flowinfo)
 ---------------------
 **-fwd_bulk_rate_avg <decimal>:** update the average number of bulk rate in the forward
 direction for the given flow<br>
@@ -136,7 +136,7 @@ direction for the given flow<br>
 **-idle_time_max <decimal>:** update the maximum time the flow was idle for the given flow <br>
 **-idle_time_min <decimal>:** update the minimum time the flow was idle for the given flow <br>
 
-##### Packet Info
+##### Packet Info (flowpackets)
 ------------
 **-fwd_packets <decimal>:** update the number of packets in the forward direction for the given flow <br>
 **-bwd_packets <decimal>:** update the number of packets in the backward direction for the given flow<br>
@@ -164,3 +164,69 @@ direction for the given flow<br>
 **-fwd_subflow_packets_avg <decimal>:** update the average packets in subflow in the forward direction for the given flow<br>
 **-bwd_subflow_packets_avg <decimal>:** update the average packets in subflow in the backward direction for the given flow<br>
 **-fwd_act_data_packets <decimal>:** update the number of packets in the forward direction with at lease one byte of TCP data payload for the given flow<br>
+
+```python
+#Here are some sample update commands 
+update 420 -duration 9000 #updates the duration for flow 420 with 9000
+update 888 -fwd_psh_flags 2 -bwd_psh_flags 2 -psh_flag_count 4 #updates fwd_psh_flags, bwd_psh_flags, and psh_flag_count with 2, 2, and 4 respectively
+```
+
+### delete
+The delete command deletes all data pertaining to a particular flow id
+#### Required Parameters 
+**flowid:** the id for the flow you are trying to delete
+
+```python
+#Here are example delete commands 
+delete 333 #delete flow with id 333
+```
+
+### insert 
+The insert command is used to insert new information into the database 
+#### Required Parameters 
+**infoType:** specify the type of data being inserted (one of "flow", "flowbytes", "flowflags", "flowiat", "flowinfo", "flowpackets") <br>
+**flowdata:** depending on the information type that is being inserted, the arguments following the infoType must include all of the information pertaining to the information  type (see the update section for the parameters required and note that they must follow the same order)
+
+```python
+#Here are example insert commands 
+insert flow 10.200.7.7 6969 172.19.1.46 42069 1 2017-04-26 11:11:11 4234444 BENIGN #inserts a new flow
+insert flowbytes 3830175 12000000.0000000000000000 0.0000 0.0000 12.0000000000000000 0.0000000000000000 490 -1 #inserts information for flow with id 3830175
+```
+
+### createuser
+The createuser command is used to create a new regular user 
+#### Required Parameters 
+**username:** the username of the new user (must be unique) <br>
+**password:** the password of the new user 
+
+```python
+#example createuser command 
+createuser martinguo iloveECE356EvenMoreThanECE240 #creates a new user
+```
+
+### createadmin 
+The createadmin command is the same as createuser but instead creates an admin
+
+#### Required Parameters 
+**username:** the username of the new admin (must be unique)<br>
+**password:** the password of the new admin 
+
+```python
+#example createuser command 
+createadmin Huanyi best356TA2021 #creates a new admin
+```
+
+### grantuserpermission
+The grantuserpermission command grants permissions to a regular user (must be an admin to use this command)
+
+#### Required Parameters 
+**privilege type:** one of 'select' (allows viewing), 'update' (allows use of update command), 'insert' (allows use of insert command), and 'delete' (allows use of delete command) <br>
+**information types:** type of information that permission pertains to (one or more of <br> 'flow', 'flowbytes', 'flowflags', 'flowiat', 'flowinfo', 'flowpackets', 'source', 'protocol')
+**username:** username of the user that you are granting permission to
+
+### revokeuserpermission
+The revokeuserpermission command works the same way as the grantuserpermission command but instead it revokes permission for that user
+#### Required Parameters 
+**privilege type:** one of 'select' (revokes viewing), 'update' (revokes use of update command), 'insert' (revokes use of insert command), and 'delete' (revokes use of delete command) <br>
+**information types:** type of information that permission pertains to (one or more of <br> 'flow', 'flowbytes', 'flowflags', 'flowiat', 'flowinfo', 'flowpackets', 'source', 'protocol')
+**username:** username of the user that you are revoking permission from

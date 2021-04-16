@@ -1,11 +1,8 @@
 import os
 import mysql.connector
 from mysql.connector import errorcode
-from dotenv import load_dotenv
 import datetime
 import csv
-
-load_dotenv()
 
 #table arrays for finding table to update 
 flowColumns = [
@@ -476,6 +473,8 @@ def insert(options):
                     options[1:]
                   )
   elif table == "flowbytes":
+      print("Hit flowbytes")
+      print(options[1:])
       cursor.execute(
                     'insert into flowbytes (flow_id, bytes_per_second, fwd_bytes_bulk_avg, bwd_bytes_bulk_avg, fwd_subflow_bytes_avg, bwd_subflow_bytes_avg, fwd_init_win_bytes, bwd_init_win_bytes) values(%s, %s,%s,%s,%s,%s,%s,%s)',
                     options[1:]
