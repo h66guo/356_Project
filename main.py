@@ -358,7 +358,7 @@ The parameters are the same parameters used in the 'grantuserpermission' command
     )
 
 def query(options): 
-  cnx = mysql.connector.connect(username,
+  cnx = mysql.connector.connect(username=username,
                               password= password,
                               host='localhost',
                               database='internet_traffic')
@@ -371,7 +371,7 @@ def query(options):
   for i in range(len(options)): 
     #data selection options
     if options[i] == "-a": 
-      queryString += " * from ((((flow inner join flowbytes on flow.id = flowbytes.flow_id) inner join flowflags on flow.id = flowflags.flow_id) inner join flowiat on flow.id = flowiat.flow_id) inner join flowinfo on flow.id = flowinfo.flow_id) inner join flowpackets on flow.id = flowpackets.flow_id"
+      queryString += "select * from ((((flow inner join flowbytes on flow.id = flowbytes.flow_id) inner join flowflags on flow.id = flowflags.flow_id) inner join flowiat on flow.id = flowiat.flow_id) inner join flowinfo on flow.id = flowinfo.flow_id) inner join flowpackets on flow.id = flowpackets.flow_id"
     elif options[i] == "-clients": 
       queryString = "select * from source union select * from destination"
     elif options[i] == "-flowbytes": 
@@ -430,7 +430,8 @@ def query(options):
       else:
         tableString = "(" + tableString + ") " + "inner join " + table + " on flow.id = " + table + ".flow_id"
 
-  queryString = "select * from " + tableString + queryString if options[0] != "-clients" else queryString
+  queryString = "select * from " + tableString + queryString if options[0] != "-clients" and options[0] != "-a" else queryString
+  print(queryString)
   cursor.execute(queryString, queryParams)
   print(cursor.column_names)
   rows = []
@@ -591,6 +592,7 @@ def createNewAdmin(user, pw):
     return
   cursor.execute("create user '{}'@'localhost' identified by '{}'".format(user, pw))
   cursor.execute("GRANT ALL PRIVILEGES ON internet_traffic.* TO '{}'@'localhost'".format(user))
+  cursor.execute("GRANT SELECT, CREATE USER on *.* to '{}'@'localhost'".format(user))
   cursor.execute("flush privileges")
   cnx.commit()
   cursor.close()
@@ -679,9 +681,10 @@ while True:
   elif options[0] == "createuser": 
     createNewUser(options[1], options[2])
   elif options[0] == "createadmin":
-    createNewAdmint(options[1], options[2])
+    createNewAdmin(options[1], options[2])
   elif options[0] == "grantuserpermission": 
     updateUserPermission(options[1], options[2:len(options)-1], options[len(options)-1])
   elif options[0] == "revokeuserpermission": 
     revokeuserpermission(options[1], options[2:len(options)-1], options[len(options)-1])
-
+  else: 
+    print("Invalid input")
