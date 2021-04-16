@@ -228,5 +228,5 @@ The grantuserpermission command grants permissions to a regular user (must be an
 The revokeuserpermission command works the same way as the grantuserpermission command but instead it revokes permission for that user
 #### Required Parameters 
 **privilege type:** one of 'select' (revokes viewing), 'update' (revokes use of update command), 'insert' (revokes use of insert command), and 'delete' (revokes use of delete command) <br>
-**information types:** type of information that permission pertains to (one or more of <br> 'flow', 'flowbytes', 'flowflags', 'flowiat', 'flowinfo', 'flowpackets', 'source', 'protocol')
+**information types:** type of information that permission pertains to (one or more of <br> 'flow', 'flowbytes', 'flowflags', 'flowiat', 'flowinfo', 'flowpackets', 'source', 'protocol') <br>
 **username:** username of the user that you are revoking permission from
