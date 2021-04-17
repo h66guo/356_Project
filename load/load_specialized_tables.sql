@@ -91,6 +91,9 @@ CREATE TABLE Flow (
   FOREIGN KEY (source_ip, source_port) REFERENCES Source(ip, port),
   FOREIGN KEY (destination_ip, destination_port) REFERENCES Destination(ip, port),
   FOREIGN KEY (protocol_id) REFERENCES Protocol(id),
+  INDEX (timestamp),
+  INDEX (duration),
+  INDEX (label),
   CHECK (duration >= 0)
 );
 
@@ -348,6 +351,7 @@ CREATE TABLE FlowBytes (
   bwd_init_win_bytes      DECIMAL(8, 0),
   PRIMARY KEY (flow_id),
   FOREIGN KEY (flow_id) REFERENCES Flow(id) ON UPDATE CASCADE ON DELETE CASCADE,
+  INDEX (bytes_per_second),
   CHECK (bytes_per_second         >= 0),
   CHECK (fwd_bytes_bulk_avg       >= 0),
   CHECK (bwd_bytes_bulk_avg       >= 0),
@@ -390,6 +394,7 @@ CREATE TABLE FlowFlags (
   ece_flag_count          DECIMAL(2, 0),
   PRIMARY KEY (flow_id),
   FOREIGN KEY (flow_id) REFERENCES Flow(id) ON UPDATE CASCADE ON DELETE CASCADE,
+  INDEX (syn_flag_count),
   CHECK(fwd_psh_flags           >= 0),
   CHECK(bwd_psh_flags           >= 0),
   CHECK(fwd_urg_flags           >= 0),
