@@ -1,93 +1,171 @@
 import pandas as pd
-import pydotplus
-from IPython.display import Image
-from sklearn import \
-    metrics  # Import scikit-learn metrics module for accuracy calculation
-from six import StringIO
-from sklearn.model_selection import \
-    train_test_split  # Import train_test_split function
-from sklearn.tree import \
-    DecisionTreeClassifier  # Import Decision Tree Classifier
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.tree import DecisionTreeClassifier  
+from sklearn.tree import plot_tree  
+from sklearn.model_selection import train_test_split  
+from sklearn.model_selection import cross_val_score
 from sklearn.tree import export_graphviz
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import plot_confusion_matrix
+import mysql.connector
+import csv
+from six import StringIO
+from IPython.display import Image
+import pydotplus
 
 
 def main():
-    # col_names = ['Flow ID', 'Source IP', 'Source Port', 'Destination IP', 'Destionation Port', 'Protocol', 'Timestamp', 'Flow Duration', 'Label']
-    # load dataset
-    pima = pd.read_csv("Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv", header=0)
-    print("load data success")
+    username = input("Enter your username\n")
+    password = input("Enter your password\n")
+    cnx = mysql.connector.connect(username=username,
+                            password= password,
+                            host='localhost',
+                            database='internet_traffic')
+    cursor = cnx.cursor(dictionary=True)
+    print("Fetching data from database...")
+    #query the data we want from the database
+    queryString = "select iat_mean, fwd_packets, bwd_packets, duration, label, bytes_per_second, syn_flag_count, rst_flag_count, psh_flag_count, ack_flag_count, urg_flag_count, cwe_flag_count, ece_flag_count, active_time_mean, idle_time_mean  from (((((flow inner join flowbytes on flow.id = flowbytes.flow_id) inner join flowflags on flow.id = flowflags.flow_id) inner join flowiat on flow.id = flowiat.flow_id) inner join flowinfo on flow.id = flowinfo.flow_id) inner join flowpackets on flow.id = flowpackets.flow_id) inner join protocol on flow.protocol_id = protocol.id"
+    cursor.execute(queryString)
+    rows = []
+    for i in cursor: 
+        rows.append(i)
+    with open('mining.csv', 'w', newline='') as f:
+        fieldnames = []
+        for i in cursor.column_names:
+            fieldnames.append(i)
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
+    print("Data successfully fetched and recorded in csv file...")
+    #import the data
+    dataframe = pd.read_csv("mining.csv", header=0)
+    #used to check if the dataframe loaded the data properly
+    dataframe.columns = ['IATMean',
+                         'ForwardPackets',
+                         'BackwardPackets',
+                         'Duration',
+                         'Label',
+                         'BytesPerSecond',
+                         'SYNFlagCount',
+                         'RSTFlagCount',
+                         'PSHFlagCount',
+                         'ACKFlagCount',
+                         'URGFlagCount',
+                         'CWEFlagCount',
+                         'ECEFlagCount',
+                         'ActiveTimeMean',
+                         'IdleTimeMean']
 
-    pima.head()
+    #display the data types                     
+    print(dataframe.head())
+    print(dataframe.dtypes)
 
-    print(pima.head())
-    print("BUILDING!!!!!")
-    print(pima.columns)
-    # feature_cols = ['Flow ID', 'Source IP', 'Source Port', 'Destination IP', 'Destionation Port', 'Protocol', 'Timestamp', 'Flow Duration']
-    y = pima[' Label'] # Target variable
+    #print unique values for each column
+    for columnName in dataframe.columns: 
+        print(columnName + ":")
+        print(dataframe[columnName].unique())
+        dataframe  = dataframe.fillna({columnName: -1})
 
-    pima[' Source IP']=pd.Categorical(pd.factorize(pima[' Source IP'])[0])
-    pima[' Destination IP']=pd.Categorical(pd.factorize(pima[' Destination IP'])[0])
-    pima[' Timestamp']= pd.Categorical(pd.factorize(pima[' Timestamp'])[0])
-    pima['Flow ID']= pd.Categorical(pd.factorize(pima['Flow ID'])[0])
-    print("trying to convert source IPPPPP", pima[' Source IP'])
-
-    del pima[' Label']
-    # del pima['Flow ID']
-    # del pima[' Source IP']
-    # del pima[' Destination IP']
-    # del pima[' Timestamp']
-    del pima['External IP']
-    del pima['Flow Bytes/s']
-    del pima[' Flow Packets/s']
-# delete attributes that could not be converted to float since the api is trying to convert all the strings to float for making the decision tree
-    X = pima # Features
+    #split dataframe into independent and dependent
+    X = dataframe.drop('Label', axis=1).copy()
+    y = dataframe['Label'].copy()
     
-
-    print("I GOT FEATURES")
-
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=1) # 70% training and 30% test
-
-    print("START CREATING")
-
-    # Create Decision Tree classifer object
-    clf = DecisionTreeClassifier(criterion="gini", max_depth=5)
-
-    
-    # Train Decision Tree Classifer
-    clf = clf.fit(X_train,y_train)
-
-    #Predict the response for test dataset
-    y_pred = clf.predict(X_test)
-
-    print("Accuracy using gini index:",metrics.accuracy_score(y_test, y_pred))
-
+    #build the preliminary clasification tree
+    X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
+    clf = DecisionTreeClassifier(random_state=42, max_depth=5)
+    clf = clf.fit(X_train, y_train)
+    # plot the preliminary tree
     dot_data = StringIO()
-    export_graphviz(clf, out_file=dot_data,  
-                    filled=True, rounded=True,
-                    special_characters=True,feature_names = pima.columns,class_names=['Benign','Ddos'])
+    export_graphviz(clf,  
+                filled=True, rounded=True,
+                special_characters=True,feature_names = X.columns,class_names=['BENIGN','DDoS'],out_file=dot_data)
     graph = pydotplus.graph_from_dot_data(dot_data.getvalue())  
-    graph.write_png('DM_gini.png')
+    graph.write_png('preliminary.png')
     Image(graph.create_png())
 
-    clf = DecisionTreeClassifier(criterion="entropy", max_depth=5)
+    #create the confusion matrix for the preliminary decision tree
+    disp = plot_confusion_matrix(clf, X_test, y_test, display_labels=["BENIGN", "DDoS"])
+    plt.show()
 
-    # Train Decision Tree Classifer
-    clf = clf.fit(X_train,y_train)
+    #cost complexity pruning 
+    #goal is to find the best pruning parameter alpha which controls how much pruning happens
+    path = clf.cost_complexity_pruning_path(X_train, y_train)
+    ccp_alphas = path.ccp_alphas
+    ccp_alphas = ccp_alphas[:-1]
 
-    #Predict the response for test dataset
-    y_pred = clf.predict(X_test)
+    clfs = [] #we put decisions trees into here
 
-    print("Accuracy using entropy index:",metrics.accuracy_score(y_test, y_pred))
+    print("Cost Complexity Pruning")
+    for ccp_alpha in ccp_alphas: 
+        print("make tree for alpha")
+        clf = DecisionTreeClassifier(random_state=0, ccp_alpha=ccp_alpha, max_depth=5)
+        clf = clf.fit(X_train, y_train)
+        clfs.append(clf)
+    
+    train_scores = [clf.score(X_train,y_train) for clf in clfs]
+    test_scores = [clf.score(X_test,y_test) for clf in clfs]
 
-    dot_data = StringIO()
-    export_graphviz(clf, out_file=dot_data,  
-                    filled=True, rounded=True,
-                    special_characters=True,feature_names = pima.columns,class_names=['Benign','Ddos'])
-    graph = pydotplus.graph_from_dot_data(dot_data.getvalue())  
-    graph.write_png('DM_entropy.png')
-    Image(graph.create_png())
+    fig, ax = plt.subplots()
+    ax.set_xlabel("alpha")
+    ax.set_ylabel("Accuracy")
+    ax.set_title("Accuracy vs alpha for training and testing sets")
+    ax.plot(ccp_alphas, train_scores, marker='o', label="train", drawstyle="steps-post")
+    ax.plot(ccp_alphas, test_scores, marker='o', label="test", drawstyle="steps-post")
+    ax.legend()
+    plt.show()
 
     
+    #there could have been many ways we divide the training and testing dataset 
+    #we use 10-fold cross validation to see if we used the best training and testing dataset
+    #i.e one set of data may have a different optimal alpha 
 
-if __name__ == "__main__":
-    main()
+    #demonstrate using a single alpha with different data sets 
+    #we see that this alpha is sensitive to the datasets 
+    print("Cross validation")
+    clf = DecisionTreeClassifier(random_state=42, ccp_alpha=0.000005, max_depth=5)
+    scores = cross_val_score(clf, X_train, y_train, cv=10)
+    df = pd.DataFrame(data={'tree': range(10), 'accuracy': scores})
+    df.plot(x='tree', y='accuracy', marker='o', linestyle='--')
+    plt.show()
+
+    #use cross validation to find optimal value for ccp_alpha
+    alpha_loop_values = []
+
+    print("10-fold for more than one alpha")
+    #for each alpha candidate, we run a 10-fold cross validation
+    for ccp_alpha in ccp_alphas: 
+        clf = DecisionTreeClassifier(random_state=0, ccp_alpha=ccp_alpha, max_depth=5)
+        scores = cross_val_score(clf, X_train, y_train, cv=10)
+        alpha_loop_values.append([ccp_alpha, np.mean(scores), np.std(scores)])
+        print("Finished one alpha candidate")
+
+    #graph the mean and standard deviation of the scores for each candidate alpha 
+    alpha_results = pd.DataFrame(alpha_loop_values, columns=['alpha','mean_accuracy', 'std'])
+
+    alpha_results.plot(x='alpha', y='mean_accuracy', yerr='std', marker='o', linestyle='--')
+    plt.show()
+
+    #this part is used to find the exact optimal alpha value used to create the optimal pruned classification tree
+    print("optimal alpha value")
+    optimal_alpha = alpha_results[(alpha_results['alpha'] > 0) & (alpha_results['alpha'] < 0.0001)]
+    print(optimal_alpha)
+
+    #optimal pruned tree
+    clf = DecisionTreeClassifier(random_state=42, ccp_alpha=2.247936 * (10**(-10)), max_depth=5)
+    clf = clf.fit(X_train, y_train)
+    dot_data = StringIO()
+    export_graphviz(clf,  
+                filled=True, rounded=True,
+                special_characters=True,feature_names = X.columns,class_names=['BENIGN','DDoS'],out_file=dot_data)
+    graph = pydotplus.graph_from_dot_data(dot_data.getvalue())  
+    graph.write_png('best.png')
+    Image(graph.create_png())
+
+    #draw a confusion matrix for the optimal pruned tree
+    disp = plot_confusion_matrix(clf, X_test, y_test, display_labels=["BENIGN", "DDoS"])
+    print(disp)
+    plt.show()
+
+
+main()
